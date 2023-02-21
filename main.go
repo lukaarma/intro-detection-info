@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/briandowns/spinner"
-	"github.com/gammazero/workerpool"
-	"github.com/mattn/go-colorable"
-	"github.com/spf13/cobra"
 	"io"
 	"os"
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/briandowns/spinner"
+	"github.com/gammazero/workerpool"
+	"github.com/mattn/go-colorable"
+	"github.com/spf13/cobra"
 )
 
 type Result struct {
@@ -22,6 +23,7 @@ type Result struct {
 }
 
 var colors bool
+var credits bool
 var format string
 var timeout int
 
@@ -41,6 +43,7 @@ func main() {
 	}
 
 	cmd.PersistentFlags().BoolVar(&colors, "colors", true, "whether colors should be used in output or not")
+	cmd.PersistentFlags().BoolVar(&credits, "credits", false, "If it should check credits marker instead of intros")
 	cmd.PersistentFlags().StringVar(&format, "format", "ascii", fmt.Sprintf("preferred output format, should be one of %s", formats))
 	cmd.PersistentFlags().IntVar(&timeout, "timeout", 10, "timeout for all HTTP requests, in seconds")
 
@@ -136,7 +139,7 @@ func run(cmd *cobra.Command, args []string) error {
 				for _, episode := range episodes {
 					result.TotalEpisodesCount++
 
-					if episode.HasIntroMarker() {
+					if (!credits && episode.HasIntroMarker()) || (credits && episode.HasCreditsMarker()) {
 						result.DetectedEpisodesCount++
 					} else {
 						result.MissingEpisodesList = append(result.MissingEpisodesList, episode)

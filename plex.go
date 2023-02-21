@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/jyggen/go-plex-client"
 	"strings"
 	"time"
+
+	"github.com/jyggen/go-plex-client"
 )
 
 type Plex struct {
@@ -141,6 +142,16 @@ type Episode struct {
 func (e *Episode) HasIntroMarker() bool {
 	for _, marker := range e.metadata.Marker {
 		if marker.Type == "intro" {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (e *Episode) HasCreditsMarker() bool {
+	for _, marker := range e.metadata.Marker {
+		if marker.Type == "credits" {
 			return true
 		}
 	}
